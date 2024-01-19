@@ -53,6 +53,9 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
     //// teclas ///
                   
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.Jugador.setInteractive()
+    this.input.setDraggable(this.Jugador);
+
 
 
 
@@ -99,7 +102,11 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
     
     }
     update () {
-
+ 
+        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+            gameObject.x = dragX;
+            //gameObject.y = dragY;
+        });
             
         if (this.cursors.left.isDown ) {
             this.Jugador.movimientoJugadorI()

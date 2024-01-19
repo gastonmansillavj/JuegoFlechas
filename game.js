@@ -8,6 +8,12 @@ var config = {
     parent: 'JuegoFlecha',
     dom: {
         createContainer: true // Habilita la creación del contenedor DOM
+    }, 
+    input: {
+        activePointers: 1, // Número de punteros táctiles activos
+        touch: {
+            target: document.getElementById('game-container') // Identificador del contenedor del juego
+        }
     },
 
     type:Phaser.AUTO,
@@ -18,6 +24,7 @@ var config = {
         height:1920,// alto de pantalla
         
     },
+    
     
     physics : {
         default:"arcade", // tipo de fisica que va a utilizar 
