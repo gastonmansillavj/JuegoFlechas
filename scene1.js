@@ -4,7 +4,7 @@ import Jugador from "./Jugador.js";
 import FlechaComun from "./FlechaComun.js"
 import VidaCasa from "./VidaCasa.js";
 import EstructuraTorre from "./EstructuraTorre.js";
-import Tienda from "./Tienda.js";
+//import Tienda from "./Tienda.js";
 import FlechaCongelante from "./FlechaCongelante.js";
 import BotonUi from "./BotonUi.js";
 export default class scene1 extends Phaser.Scene {
@@ -98,10 +98,19 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
     this.physics.add.overlap(this.Grupobalas,this.GrupoEnemigos,this.restaVidaEnemigo,null,this);
     this.physics.add.overlap(this.Grupobalas,this.limitesup,this.destruyeBala,null,this);
     this.physics.add.overlap(this.GrupoEnemigos,this.limiteinf,this.destruyeBarril,null,this);
-    this.physics.add.overlap(this.GrupoEnemigos,this.GrupoEnemigos,this.acomodaEnemigos,null,this);
+   
+    /// enemigos pruebas 
+
+    //this.Enemigo= new Enemigos(this,500,200,"GoblinEnemigo",100)
+    //this.GrupoEnemigos.add(this.Enemigo);
+
     
     }
     update () {
+
+        this.GrupoEnemigos.children.iterate(function (child) {
+            child.estadosEnemigo (child)
+         });
  
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.x = dragX;
@@ -113,7 +122,7 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
         }
         else if (this.cursors.right.isDown ) {
             this.Jugador.movimientoJugadorD()
-            
+           
            
         }
         else {
@@ -122,6 +131,9 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
 
         this.GrupoEnemigos.children.iterate(function(child){
            child.actualizaPosicion()
+           if (child.body.enable==false) {
+                setTimeout(()=>{ child.destroy ()},5000)
+           }
         });
 
         
@@ -198,7 +210,7 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
     restaVidaEnemigo(bala,enemigo){
 
         bala.destroy();
-        let tipoBuf=enemigo.actualizaVida(this.Jugador.PoderDeAtaque,enemigo,bala)
+        let tipoBuf=enemigo. EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,bala)
         this.Jugador.buffsJugador(tipoBuf,this.Jugador,this.tempDisp)
         
         

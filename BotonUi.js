@@ -1,8 +1,7 @@
 export default class BotonUi extends Phaser.Physics.Arcade.Sprite{
 
     constructor (scene,x,y,texture,escalaX,escalaY,TxtBoton,callback) {
-        super (scene,x,y,texture,escalaX,escalaY)
-        this.scene=scene
+        super (scene,x,y,texture,escalaX,escalaY,TxtBoton,)
         this.x=x
         this.y=y
         this.texture=texture
@@ -23,8 +22,10 @@ export default class BotonUi extends Phaser.Physics.Arcade.Sprite{
             strokeThickness: 9
            
         });
-        this.texto.setDepth(6)
-        this.texto.setOrigin(0.5, 0.5)
+       
+        
+       this.texto.setDepth(6)
+       this.texto.setOrigin(0.5, 0.5)
         
         //this.setTint(0x0000FF)
         this.on('pointerup',callback);
@@ -36,6 +37,11 @@ export default class BotonUi extends Phaser.Physics.Arcade.Sprite{
     destruir() {
         this.texto.destroy()
         this.destroy()
+    }
+
+    desactivaBoton(boton,estado) {
+        boton.enabled=estado;
+       boton.visible=estado;
     }
 
    

@@ -61,10 +61,17 @@ export default class Enemigos extends ClasePrincipal {
         })
 
         this.scene.anims.create({
-            key: 'reciveAtaque',
+            key: 'recibeAtaque',
             frames: this.scene.anims.generateFrameNumbers(this.texture, { start: 6, end: 7 }),
-            frameRate: 5,
+            frameRate: 10,
             repeat: 0
+        })
+
+        this.scene.anims.create({
+            key: 'congelado',
+            frames: this.scene.anims.generateFrameNumbers(this.texture, { start: 6, end: 6 }),
+            frameRate: 100,
+            repeat: -1
         })
     
     };
@@ -75,80 +82,116 @@ export default class Enemigos extends ClasePrincipal {
         
     }
 
-    actualizaVida(poderDeAtaque,enemigo,flecha) {
-        enemigo.vida=enemigo.vida-poderDeAtaque 
-        
-        //console.log(enemigo.vida)
-        if(enemigo.vida<=0){
-            
+    EnemigoRecibeAtaque(poderDeAtaque,enemigo,flecha) {
+
+        enemigo.vida=enemigo.vida-poderDeAtaque
+
+        if(enemigo.vida<=0) {
             enemigo.estado="muerto"
-            this.estadosEnemigo(enemigo)
-          
             return this.buffDeAtaque
-            
+
         }
-        else{
 
-            if (flecha.name =="FlechaComun"& enemigo.estado!="muerto") {
+        else if (flecha.name =="FlechaComun" ) {
 
-                    if(enemigo.estado=="normal") {
-                        this.estadosEnemigo(enemigo)                       
-                    }
-                    else {                       
-                        enemigo.TextoVida.setText(enemigo.vida)
-                    }
-                                   
-            }
-            else if (flecha.name =="FlechaCongelante") {
-
-                enemigo.estado="congelado"
-                this.estadosEnemigo(enemigo)
-
-            }
-            
-                     
+                enemigo.estado="recibeAtaque"  
+              
+                                        
+                       
         }
-               
+        
+        else if (flecha.name =="FlechaCongelante") {
+
+            enemigo.estado="congelado"
+            setTimeout(()=>{            
+                enemigo.estado="normal"
+                console.log("fff")
+            },5000)          
+
+        }
+        
+        enemigo.TextoVida.setText(enemigo.vida)
+        
     }
 
 
+//////////////////////////////////////////////////
+
 
     estadosEnemigo (enemigo) {
+ 
 
-        console.log(enemigo.estado)
 
-        if (enemigo.estado=="muerto"){
+        if (enemigo.estado == "muerto"){
             enemigo.body.enable=false;        
-            enemigo.clearTint() 
-            enemigo.TextoVida.setText(enemigo.vida)        
-            enemigo.anims.play("muere");
-            enemigo.on("animationcomplete",()=>{this.destruyePersonaje(enemigo)},this)
-        }
+            enemigo.clearTint()
+            enemigo.TextoVida.destroy() 
 
+            if(enemigo.anims.currentAnim.key!="muere") {
+                enemigo.anims.play("muere");
+                
+                
+            }
+            
+            enemigo.on("animationcomplete",()=>{ 
+                this.destruyePersonaje(enemigo)
+                
+                
+            },this)  
+            
+       
+        }
+        
         else if(enemigo.estado=="normal"){
-            enemigo.TextoVida.setText(enemigo.vida)
-            enemigo.estado="recibeAtaque"
-            enemigo.anims.play("reciveAtaque");
-            enemigo.setVelocity(0)
-            enemigo.on("animationcomplete",()=>{
-                enemigo.estado="normal"             
+            
+            if(enemigo.anims.currentAnim.key!="caminar" ) {
+                
                 enemigo.anims.play("caminar")
-                enemigo.setVelocityY(70)              
-            },this)
+                
+
+                
+            }
+            
+            enemigo.setVelocityY(70)
+            enemigo.clearTint() 
+           
 
         }
 
         else if(enemigo.estado=="congelado") {
             
-            enemigo.TextoVida.setText(this.vida)
             enemigo.setVelocity(0)
-            enemigo.setTint(0x3498db);
-            //enemigo.estado="recibeAtaque"
-            enemigo.anims.stop(enemigo.anims.currentAnim); 
-            setTimeout(()=>{this.descongela(enemigo)},10000)
+            enemigo.setTint(0x3498db);          
+            
+            
+           
+            if(enemigo.anims.currentAnim.key!="congelado") {
+                
+                enemigo.anims.play("congelado");
+                
+            }
+            console.log("c2")
             
 
         }
+       else if ( enemigo.estado=="recibeAtaque") {
+            
+        enemigo.setVelocity(0)
+        enemigo.anims.play("recibeAtaque");      
+       
+
+        if(enemigo.anims.currentAnim.key=="recibeAtaque" && enemigo.anims.currentFrame.index==1) {
+            enemigo.estado="normal"
+            
+        }
+            
+            
+                              
+            
+
+
+        }
+
     }
 
     
@@ -160,24 +203,11 @@ export default class Enemigos extends ClasePrincipal {
     }
 
     destruyePersonaje(enemigo) {
-        enemigo.TextoVida.destroy() 
         enemigo.destroy()
         
     }
 
-    descongela(enemigo){
-
-        if (enemigo.anims?.play("caminar")===undefined) {
-               
-        }
-        else {
-        enemigo.estado="normal"
-        enemigo.anims.play("caminar")
-        enemigo.setVelocityY(70)
-        enemigo.clearTint()
-        }
-        
-    }
+    
 
    
     
