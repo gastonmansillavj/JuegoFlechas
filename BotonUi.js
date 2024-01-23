@@ -41,7 +41,7 @@ export default class BotonUi extends Phaser.Physics.Arcade.Sprite{
 
     desactivaBoton(boton,estado) {
         boton.enabled=estado;
-       boton.visible=estado;
+        boton.visible=estado;
     }
 
    

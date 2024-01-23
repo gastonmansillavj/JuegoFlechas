@@ -4,9 +4,9 @@ import Jugador from "./Jugador.js";
 import FlechaComun from "./FlechaComun.js"
 import VidaCasa from "./VidaCasa.js";
 import EstructuraTorre from "./EstructuraTorre.js";
-//import Tienda from "./Tienda.js";
 import FlechaCongelante from "./FlechaCongelante.js";
 import BotonUi from "./BotonUi.js";
+import UiFinNivel from "./UiFinNivel.js";
 export default class scene1 extends Phaser.Scene {
     
 
@@ -25,6 +25,8 @@ export default class scene1 extends Phaser.Scene {
         this.load.image("barraVida","assets/barraVida.png");
         this.load.image("FondoBarraVida","assets/fondoBarraVida.png");
         this.load.image("torreBarraVida","assets/torre.png");
+        this.load.image("Boton","assets/boton.png");
+        this.load.image("fondoUi","assets/fondoUi.png")
         
     }   
     create () {
@@ -33,15 +35,25 @@ export default class scene1 extends Phaser.Scene {
         var fondo=this.add.image(520,940,"fondo");
         fondo.setScale(3);
 //  temporizador creador de barriles
-        this.time.addEvent({
-            delay: 5000, // milisegundos
+        this.tempEnemigos=this.time.addEvent({
+            delay: 8000, // milisegundos
             callback: this.CreadorDeBarriles,
             callbackScope: this,
             loop: true
         });
 
+ // temporizador oleadas /////
+     this.nivelTerminado=false
+    setTimeout(()=>{this.terminaNivel(this)},100000)        
+
+    // limites de Balas y  barriles
+    this.grupoLimites=this.add.group()
+    this.limitesup=this.physics.add.sprite(500,-20,"Cubo").setScale(25,1);
+    this.limiteinf=this.physics.add.sprite(500,1500,"Cubo").setScale(25,1);
+
+
 // jugador principal
-this.Jugador= new Jugador(this,500,1700,"arquero",100)
+    this.Jugador= new Jugador(this,500,1650,"arquero",100)
 
     // temprizador de balas 
     this.tempDisp = this.time.addEvent({
@@ -50,6 +62,7 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
         callbackScope: this,
         loop: true
     });
+
     //// teclas ///
                   
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -66,11 +79,7 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
     this.Grupobalas=this.add.group()
 
 
-    // limites de Balas y  barriles
-    this.grupoLimites=this.add.group()
-    this.limitesup=this.physics.add.sprite(500,-20,"Cubo").setScale(25,1);
-    this.limiteinf=this.physics.add.sprite(500,1900,"Cubo").setScale(25,1);
-
+    
     // aleatoriedad barriles 
         this.AleatorioBarril=1
         this.numAnterior=1;
@@ -82,8 +91,8 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
 
     // estructuraTorre 
 
-    this.EstructuraTorre= new EstructuraTorre (this,100,1700,"EstructuraTorre",1000)
-    this.EstructuraTorre2= new EstructuraTorre (this,980,1700,"EstructuraTorre",1000)
+    this.EstructuraTorre= new EstructuraTorre (this,100,1600,"EstructuraTorre",1000)
+    this.EstructuraTorre2= new EstructuraTorre (this,980,1600,"EstructuraTorre",1000)
 
     // botonPowerUp
 
@@ -104,13 +113,34 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
     //this.Enemigo= new Enemigos(this,500,200,"GoblinEnemigo",100)
     //this.GrupoEnemigos.add(this.Enemigo);
 
-    
+    this.MenuSiguienteNivel = new UiFinNivel (this,550,900,"fondoUi","Nivel Terminado",1.8,2,"Boton")
+    this.MenuSiguienteNivel.ocultatodos(this.MenuSiguienteNivel,false)
+
     }
     update () {
+        console.log(this.scene)
 
-        this.GrupoEnemigos.children.iterate(function (child) {
-            child.estadosEnemigo (child)
-         });
+        console.log(this.GrupoEnemigos.countActive())
+        if (this.nivelTerminado==true) {
+            this.tempEnemigos.remove()
+            if (this.GrupoEnemigos.countActive()<=0) {
+                this.MenuSiguienteNivel.muestraSiguiente(this.MenuSiguienteNivel,true)
+                //this.scene.pause()
+
+
+            }
+            
+            //this.scene.pause()
+           // setTimeout (()=>{this.scene.resume()
+           // this.nivelTerminado=false
+           // },5000)
+
+           
+            
+        }
+        else {
+            
+        
  
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.x = dragX;
@@ -128,15 +158,23 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
         else {
             this.Jugador.sinMovimiento()
         }
+        // if FinJuego
+    }
 
         this.GrupoEnemigos.children.iterate(function(child){
            child.actualizaPosicion()
            if (child.body.enable==false) {
-                setTimeout(()=>{ child.destroy ()},5000)
+                setTimeout(()=>{ child.destroy ()},1200)
            }
         });
 
+        this.GrupoEnemigos.children.iterate(function (child) {
+            child.estadosEnemigo (child)
+         });
+
         
+        
+
         
 
        
@@ -216,7 +254,12 @@ this.Jugador= new Jugador(this,500,1700,"arquero",100)
         
         
     }
-    acomodaEnemigos (enemigo1,enemigo2) {
+    
+
+    terminaNivel (escena) {
+        
+        escena.nivelTerminado=true
+        console.log(this.nivelTerminado)
         
     }
 }

@@ -10,14 +10,15 @@ export default class Jugador extends ClasePrincipal{
         this.y=y
         this.texture=texture
         this.vida=vida
-        this.setBodySize(10,25)
-        this.setOffset(19,8)
+        this.setBodySize(30,40)
+        this.setOffset(10,8)
         this.vel_de_disparos=400;
         this.cantidadDePersonajes=1;
         this.PoderDeAtaque=10;
         this.setScale(6)
         this.velDeMovimiento=300;
         this.setDepth(1)
+        
 
 
         this.scene.physics.add.existing(this)

@@ -7,7 +7,7 @@ export default class EstructuraTorre extends Phaser.Physics.Arcade.Sprite{
         this.y=y
         this.texture=texture
         this.vida=vida
-        this.setScale(3)
+        this.setScale(4)
         //this.setOffset.y(1)
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
