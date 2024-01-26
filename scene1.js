@@ -7,6 +7,12 @@ import EstructuraTorre from "./EstructuraTorre.js";
 import FlechaCongelante from "./FlechaCongelante.js";
 import BotonUi from "./BotonUi.js";
 import UiFinNivel from "./UiFinNivel.js";
+import BarraExp from "./BarraExp.js";
+import UiPowerUps from "./UiPowerUps.js";
+import EfectosColisionesFlechas from "./EfectosColisionesFlechas.js";
+import enemigoSlime from "./enemigoSlime.js";
+import enemigoLobos from "./enemigoLobos.js";
+import enemigoAbeja from "./enemigoAbeja.js";
 export default class scene1 extends Phaser.Scene {
     
 
@@ -27,24 +33,63 @@ export default class scene1 extends Phaser.Scene {
         this.load.image("torreBarraVida","assets/torre.png");
         this.load.image("Boton","assets/boton.png");
         this.load.image("fondoUi","assets/fondoUi.png")
-        
+        this.load.spritesheet("flechaDeHielo","assets/flechaCongelante.png",{frameWidth:64,frameHeight:193});
+        this.load.spritesheet("explosionHielo","assets/explosionHielo.png",{frameWidth:256,frameHeight:256});
+        this.load.spritesheet("slimeEnemigo","assets/slimeEnemigo.png",{frameWidth:48,frameHeight:48});
+        this.load.spritesheet("loboEnemigo","assets/loboEnemigo.png",{frameWidth:48,frameHeight:48});
+        this.load.spritesheet("abejaEnemigo","assets/abejaEnemigo.png",{frameWidth:48,frameHeight:48});
+
     }   
     create () {
       
+
+
 ///fondo
         var fondo=this.add.image(520,940,"fondo");
         fondo.setScale(3);
-//  temporizador creador de barriles
-        this.tempEnemigos=this.time.addEvent({
-            delay: 8000, // milisegundos
-            callback: this.CreadorDeBarriles,
-            callbackScope: this,
-            loop: true
-        });
+
+this.grupoTemp = []
+
+        /// crea temporizadores Goblin
+setTimeout(() =>{
+
+    this.creaTemporizadores(this.tempEnemigos,30000,this.CreadorDeBarriles,this)
+    
+ },100000)
+
+/// crea temporizadores Slime
+setTimeout(() =>{
+
+    this.creaTemporizadores(this.tempEnemigosSlime,4000,this.creadorEnemigosSlimes,this)
+
+ },1000)
+
+
+
+/// crea temporizadores Abeja 
+setTimeout(() =>{
+
+    this.creaTemporizadores(this.tempEnemigosAbejas,20000,this.creadorEnemigosAbejas,this)
+
+ },180000)
+
+
+/// crea temporizadores Lobo 
+setTimeout(() =>{
+
+    this.creaTemporizadores(this.tempEnemigosLobos,15000,this.creadorEnemigosLobos,this)
+
+ },60000)
+
+
+
+    // pausa juego 
+
+    this.juegoPausado=false;
 
  // temporizador oleadas /////
      this.nivelTerminado=false
-    setTimeout(()=>{this.terminaNivel(this)},100000)        
+    setTimeout(()=>{this.terminaNivel(this)},10000000)        
 
     // limites de Balas y  barriles
     this.grupoLimites=this.add.group()
@@ -55,13 +100,29 @@ export default class scene1 extends Phaser.Scene {
 // jugador principal
     this.Jugador= new Jugador(this,500,1650,"arquero",100)
 
+  
+
+    ///flechas congelantes 
+    
+    this.EstadoFlechaCongelante=false
+    this.cantFlechasCongelantes=1
+    this.contadorFlechas=0;
+    this.TiempoSpawnFlechaCongelante=8
+
+    //cantidad de flechas comunes 
+    
+    this.cantidadFlechasComunes = 1
+
+    // velocidad de disparo 
+    this.velocidadDisparo=400
     // temprizador de balas 
     this.tempDisp = this.time.addEvent({
-        delay: this.Jugador.vel_de_disparos, // milisegundos
+        delay: this.velocidadDisparo, // milisegundos
         callback: this.CreadorDeBalas,
         callbackScope: this,
         loop: true
     });
+
 
     //// teclas ///
                   
@@ -89,19 +150,32 @@ export default class scene1 extends Phaser.Scene {
     this.add.image(115,90,"torreBarraVida").setScale(0.4);
     this.vidaCastillo= new VidaCasa(this,180,69,"barraVida",90).setDepth(10)
 
+    // experiencia 
+
+    this.barraExperiencia = new BarraExp(this,600,65,"Cubo")
+
+
     // estructuraTorre 
 
     this.EstructuraTorre= new EstructuraTorre (this,100,1600,"EstructuraTorre",1000)
     this.EstructuraTorre2= new EstructuraTorre (this,980,1600,"EstructuraTorre",1000)
 
     // botonPowerUp
-
     this.tipoDisparo="flechaComun"
-    let PowerUp1=new BotonUi(this,1000,1200,"Boton",0.5,1,"p1",()=>{
     
-        this.tipoDisparo="flechaCongelante"
-        setTimeout(()=>{this.tipoDisparo="flechaComun"},5000)
-    })
+
+    // menu termia nivel
+    this.MenuSiguienteNivel = new UiFinNivel (this,550,900,"fondoUi","Nivel Terminado",1.8,2,"Boton")
+    this.MenuSiguienteNivel.ocultatodos(this.MenuSiguienteNivel,false)  
+    
+    
+    // menu powerUps
+    this.menuPowerUps= new UiPowerUps(this,550,900,"fondoUi","Elige una mejora",1.8,2,"Boton",this.Jugador)
+    this.menuPowerUps.ocultatodos(this.menuPowerUps,false)
+    //this.menuPowerUps.creaPowerUps(this.menuPowerUps)
+    
+
+    // pausa Escena 
     
     
     this.physics.add.overlap(this.Grupobalas,this.GrupoEnemigos,this.restaVidaEnemigo,null,this);
@@ -110,17 +184,65 @@ export default class scene1 extends Phaser.Scene {
    
     /// enemigos pruebas 
 
+    //this.abejaEnemigo= new enemigoAbeja(this,Phaser.Math.Between(280,800),200,"abejaEnemigo",50)
+    //this.GrupoEnemigos.add(this.abejaEnemigo)
+
+
+    //this.LoboEnemigo= new enemigoLobos(this,Phaser.Math.Between(280,800),200,"loboEnemigo",50)
+    //this.GrupoEnemigos.add(this.LoboEnemigo);
+
+    //this.SlimeEnemigo= new enemigoSlime(this,500,200,"slimeEnemigo",50)
+    //this.GrupoEnemigos.add(this.SlimeEnemigo);
+    
+    //  this.creadorEnemigosSlimes (700)
     //this.Enemigo= new Enemigos(this,500,200,"GoblinEnemigo",100)
     //this.GrupoEnemigos.add(this.Enemigo);
-
-    this.MenuSiguienteNivel = new UiFinNivel (this,550,900,"fondoUi","Nivel Terminado",1.8,2,"Boton")
-    this.MenuSiguienteNivel.ocultatodos(this.MenuSiguienteNivel,false)
-
+    
     }
     update () {
-        console.log(this.scene)
 
-        console.log(this.GrupoEnemigos.countActive())
+        if (this.time.now>60000) {
+
+        }
+
+       
+       
+       
+        if (this.juegoPausado==true) {
+
+            this.GrupoEnemigos.children.iterate(function (child) {
+                child.setVelocity(0)
+             });
+
+
+             this.grupoTemp.forEach(function(elemento) {
+                elemento.paused=true
+            });
+             
+             
+            this.tempDisp.paused=true
+            
+            
+             
+            
+
+        }
+        else {
+            
+            this.grupoTemp.forEach(function(elemento) {
+                console.log(elemento.paused=false);
+            });
+
+            this.tempDisp.paused=false
+         
+
+
+        if(this.Jugador.x<260) {
+            this.Jugador.x=260
+        }
+        else if(this.Jugador.x>830) {
+            this.Jugador.x=830
+        }
         if (this.nivelTerminado==true) {
             this.tempEnemigos.remove()
             if (this.GrupoEnemigos.countActive()<=0) {
@@ -170,9 +292,13 @@ export default class scene1 extends Phaser.Scene {
 
         this.GrupoEnemigos.children.iterate(function (child) {
             child.estadosEnemigo (child)
+            
+            
          });
 
-        
+
+         //else if pause 
+        }
         
 
         
@@ -190,20 +316,22 @@ export default class scene1 extends Phaser.Scene {
 
         if (this.AleatorioBarril==1) {
             this.numAnterior=1;
-            this.creadorDosBarriles(300)
-            this.creadorDosBarriles(600)
+            this.creadorDosBarriles(Phaser.Math.Between(230,350))
+            this.creadorDosBarriles(Phaser.Math.Between(650,830))
 
         }
         else if(this.AleatorioBarril==2) {
             this.numAnterior=2
-            this.creadorDosBarriles(900)
-            this.creadorDosBarriles(600)
+            this.creadorDosBarriles(Phaser.Math.Between(350,500))
+            this.creadorDosBarriles(Phaser.Math.Between(650,830))
         }
         else {
             this.numAnterior=3
-            this.creadorDosBarriles(900)
-            this.creadorDosBarriles(300)
+            this.creadorDosBarriles(Phaser.Math.Between(500,650))
+            this.creadorDosBarriles(Phaser.Math.Between(230,350))
         }
+
+        
         
           
 
@@ -211,27 +339,63 @@ export default class scene1 extends Phaser.Scene {
     }
 
     creadorDosBarriles (BarrilX) {
+        
         this.Enemigo= new Enemigos(this,BarrilX,200,"GoblinEnemigo",100)
         this.GrupoEnemigos.add(this.Enemigo);
+
+        console.log("goblin")
+
+    }
+
+    creadorEnemigosSlimes () {
+        this.SlimeEnemigo= new enemigoSlime(this,Phaser.Math.Between(280,800),200,"slimeEnemigo",10)
+        this.GrupoEnemigos.add(this.SlimeEnemigo);
+        
+
+    }
+
+    creadorEnemigosLobos () {
+        this.LoboEnemigo= new enemigoLobos(this,Phaser.Math.Between(280,800),200,"loboEnemigo",50)
+        this.GrupoEnemigos.add(this.LoboEnemigo);
+        
+
+    }
+
+    creadorEnemigosAbejas() {
+        let PosAbejasX= Phaser.Math.Between(300,600)
+        let PosAbejasY=200
+        let contCambioX=0
+
+        this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",20)
+        this.GrupoEnemigos.add(this.abejaEnemigo)
+        PosAbejasY-=60
+        PosAbejasX-=30
+        for (let i = 0; i <2; i++) { 
+                       
+            this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",20)
+            this.GrupoEnemigos.add(this.abejaEnemigo)
+            PosAbejasX+=60
+
+           
+        }
+        PosAbejasY-=60
+        PosAbejasX-=180
+        for (let i = 0; i <4; i++) { 
+                       
+            this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",20)
+            this.GrupoEnemigos.add(this.abejaEnemigo)
+            PosAbejasX+=60
+           
+        }
 
     }
    
  
     CreadorDeBalas() {
         this.Jugador.anims.play("disparar");
-
-        if(this.tipoDisparo=="flechaComun") {
-            this.Bala= new FlechaComun(this,this.Jugador.x-10,this.Jugador.y-60,"flecha",100)
-            this.Grupobalas.add(this.Bala)
-        }
-        else if(this.tipoDisparo=="flechaCongelante"){
-        this.FlechaCongelante=new FlechaCongelante (this,this.Jugador.x-10,this.Jugador.y-60,"flecha",100)
-        this.Grupobalas.add(this.FlechaCongelante)
-        }
-        
-        
-
-        
+        this.SpawnFlechas()
+     
+      
     }
 
     destruyeBala(bala,enemigo){       
@@ -248,8 +412,9 @@ export default class scene1 extends Phaser.Scene {
     restaVidaEnemigo(bala,enemigo){
 
         bala.destroy();
-        let tipoBuf=enemigo. EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,bala)
-        this.Jugador.buffsJugador(tipoBuf,this.Jugador,this.tempDisp)
+        let exp=enemigo.EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,bala)
+        
+        this.barraExperiencia.ActualizaExperiencia(exp,this.barraExperiencia,this.Jugador,this.menuPowerUps)
         
         
         
@@ -261,5 +426,70 @@ export default class scene1 extends Phaser.Scene {
         escena.nivelTerminado=true
         console.log(this.nivelTerminado)
         
+    }
+
+    SpawnFlechas() {
+
+        this.contadorFlechas+=1
+
+        if (this.EstadoFlechaCongelante && this.contadorFlechas>=this.TiempoSpawnFlechaCongelante) {
+            
+            let posFlechas=this.Jugador.x-(50*(this.cantFlechasCongelantes-1))
+
+            for (let i = 0; i <this.cantFlechasCongelantes; i++) {
+
+                this.creaYGuardaFlechas("flechaCongelante",posFlechas+i*100)
+            
+            }
+        
+            this.contadorFlechas=0
+
+
+        }
+        else {
+            let posFlechas=this.Jugador.x-(25*(this.cantidadFlechasComunes-1))
+
+            for (let i = 0; i <this.cantidadFlechasComunes; i++) {
+
+                this.creaYGuardaFlechas("comun",posFlechas+i*50)
+            
+            }
+         
+           
+        }
+
+
+    }
+
+    creaYGuardaFlechas(tipo,xFlechas) {
+        if(tipo=="flechaCongelante") {
+        this.FlechaCongelante=new FlechaCongelante (this,xFlechas,this.Jugador.y-60,"flechaDeHielo",100)
+        this.Grupobalas.add(this.FlechaCongelante)
+
+        }
+        else {
+            this.Bala= new FlechaComun(this,xFlechas,this.Jugador.y-60,"flecha",100)
+            this.Grupobalas.add(this.Bala)
+           
+        }
+        
+    }
+
+
+    creaTemporizadores (nombreEnemigos,tiempo,metodo,escena) {
+        //  temporizador creador de EnemigosLobos
+    nombreEnemigos=this.time.addEvent({
+    delay: tiempo, // milisegundos
+    callback:metodo,
+    callbackScope: this,
+    loop: true })
+
+    this.grupoTemp.push(nombreEnemigos)
+    console.log(this.grupoTemp.length)
+    
+    
+    
+    
+
     }
 }

@@ -39,7 +39,7 @@ var config = {
         forceSetTimeOut: true
       },
 
-    scene:[InicioSesion,Menu,MenuCompras,scene1],
+    scene:[scene1,InicioSesion,Menu,MenuCompras],
     
 
 }

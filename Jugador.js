@@ -14,12 +14,11 @@ export default class Jugador extends ClasePrincipal{
         this.setOffset(10,8)
         this.vel_de_disparos=400;
         this.cantidadDePersonajes=1;
-        this.PoderDeAtaque=10;
+        this.PoderDeAtaque=5;
         this.setScale(6)
         this.velDeMovimiento=300;
         this.setDepth(1)
-        
-
+        this.nivel=0
 
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)

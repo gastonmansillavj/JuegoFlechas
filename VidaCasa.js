@@ -21,6 +21,7 @@ export default class VidaCasa extends ClasePrincipal{
 
    restaVidaCasa(casa){
         casa.vida=casa.vida-10
+        
     if (casa.vida>0) {
     
         casa.setScale(casa.vida/100,1)

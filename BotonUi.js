@@ -19,7 +19,8 @@ export default class BotonUi extends Phaser.Physics.Arcade.Sprite{
             color: '#ffffff',
             bold:true,
             stroke:  '#000000',
-            strokeThickness: 9
+            strokeThickness: 9,
+            align: 'center'
            
         });
        
@@ -28,7 +29,7 @@ export default class BotonUi extends Phaser.Physics.Arcade.Sprite{
        this.texto.setOrigin(0.5, 0.5)
         
         //this.setTint(0x0000FF)
-        this.on('pointerup',callback);
+        this.on('pointerdown',callback);
         this.scene.add.existing(this)
         
        
