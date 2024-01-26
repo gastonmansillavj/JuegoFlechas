@@ -30,7 +30,7 @@ var config = {
         default:"arcade", // tipo de fisica que va a utilizar 
         arcade: {
             gravity: { y :0},// la gravedad del juego
-            debug: true, // debug
+            debug:false, // debug
             fps: 60
         }
     },
@@ -39,7 +39,7 @@ var config = {
         forceSetTimeOut: true
       },
 
-    scene:[scene1,InicioSesion,Menu,MenuCompras],
+    scene:[InicioSesion,Menu,MenuCompras,scene1],
     
 
 }

@@ -10,8 +10,8 @@ export default class enemigoSlime extends ClasePrincipal {
         this.y=y
         this.texture=texture
         this.vida=vida
-        this.velcidad=50
-        this.setVelocityY(this.velcidad)
+        this.velocidad=50
+        this.setVelocityY(this.velocidad)
         this.setScale(5)
         this.TextoVida = scene.add.text(this.x, this.y, vida, {strokeThickness:2,fontFamily:"Open sans",fontSize: '40px', fill: '#000000' });
         this.TextoVida.setDepth(1)
@@ -198,7 +198,7 @@ export default class enemigoSlime extends ClasePrincipal {
                 
             }
             
-            enemigo.setVelocityY(enemigo.velcidad)
+            enemigo.setVelocityY(enemigo.velocidad)
             enemigo.clearTint() 
            
 

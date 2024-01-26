@@ -29,6 +29,9 @@ export default class UiMensajes extends Phaser.Physics.Arcade.Sprite{
         this.texto.setOrigin(0.5, 0.5)
 
         this.BotonAceptar= new BotonUi (this.scene,this.x,this.y+200,this.imgbotonOk,1,1,"aceptar",()=>{
+            if (this.scene.juegoPausado) {
+                this.scene.juegoPausado=false
+            }
             this.ocultaMuestra(this,false)
         })
         this.BotonAceptar.setDepth(11)

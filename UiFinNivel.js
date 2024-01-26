@@ -34,7 +34,7 @@ export default class UiFinNivel extends Phaser.Physics.Arcade.Sprite{
         this.SiguienteNivel.texto.setDepth(12)
 
         this.Reintentar= new BotonUi (this.scene,this.x,this.y+100,this.imgbotonOk,1,1,"Reintentar",()=>{
-           
+            this.scene.scene.restart()
         })
         this.Reintentar.setDepth(11)
         this.Reintentar.texto.setDepth(12)
@@ -67,7 +67,7 @@ export default class UiFinNivel extends Phaser.Physics.Arcade.Sprite{
     muestraReiniciar (MenuSiguienteNivel,estado) {
        this.ocultaMuestra(MenuSiguienteNivel,estado)
        this.ocultaMuestra(MenuSiguienteNivel.Reintentar,estado)
-       this.ocultaMuestra(MenuSiguienteNivel.Continuar,estado)
+       //this.ocultaMuestra(MenuSiguienteNivel.Continuar,estado)
        this.ocultaMuestra(MenuSiguienteNivel.Regresar,estado)
     }
 

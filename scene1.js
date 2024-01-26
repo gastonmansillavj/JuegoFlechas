@@ -13,6 +13,7 @@ import EfectosColisionesFlechas from "./EfectosColisionesFlechas.js";
 import enemigoSlime from "./enemigoSlime.js";
 import enemigoLobos from "./enemigoLobos.js";
 import enemigoAbeja from "./enemigoAbeja.js";
+import UiMensajes from "./UiMensajes.js";
 export default class scene1 extends Phaser.Scene {
     
 
@@ -77,15 +78,28 @@ setTimeout(() =>{
 /// crea temporizadores Lobo 
 setTimeout(() =>{
 
-    this.creaTemporizadores(this.tempEnemigosLobos,15000,this.creadorEnemigosLobos,this)
+    this.creaTemporizadores(this.tempEnemigosLobos,13000,this.creadorEnemigosLobos,this)
+    
 
- },60000)
+ },50000)
 
 
+ /// creaJefeFinal
+
+ setTimeout(() =>{
+
+    this.SlimeEnemigo= new enemigoSlime(this,500,200,"slimeEnemigo",500)
+    .setScale(10)
+    this.SlimeEnemigo.velocidad=20
+    this.SlimeEnemigo.setTint(0xFF0000)
+    this.expEnemigo=500;
+    this.GrupoEnemigos.add(this.SlimeEnemigo);
+
+ },320000)
 
     // pausa juego 
 
-    this.juegoPausado=false;
+    this.juegoPausado=true;
 
  // temporizador oleadas /////
      this.nivelTerminado=false
@@ -182,6 +196,11 @@ setTimeout(() =>{
     this.physics.add.overlap(this.Grupobalas,this.limitesup,this.destruyeBala,null,this);
     this.physics.add.overlap(this.GrupoEnemigos,this.limiteinf,this.destruyeBarril,null,this);
    
+
+    // mensaje mover jugador
+
+    this.MensajeMueveAlJugador = new UiMensajes(this,500,500,"fondoUi"," Desliza el jugador\n con el dedo o \n con el mouse, el \ndisparo es \nautomatico",1,1,"Boton")
+
     /// enemigos pruebas 
 
     //this.abejaEnemigo= new enemigoAbeja(this,Phaser.Math.Between(280,800),200,"abejaEnemigo",50)
@@ -201,7 +220,9 @@ setTimeout(() =>{
     }
     update () {
 
-        if (this.time.now>60000) {
+        if (this.vidaCastillo.vida<=0) {
+            this.juegoPausado=true
+            this.MenuSiguienteNivel.muestraReiniciar(this.MenuSiguienteNivel,true)
 
         }
 
@@ -220,11 +241,7 @@ setTimeout(() =>{
             });
              
              
-            this.tempDisp.paused=true
-            
-            
-             
-            
+            this.tempDisp.paused=true         
 
         }
         else {
@@ -268,7 +285,7 @@ setTimeout(() =>{
             gameObject.x = dragX;
             //gameObject.y = dragY;
         });
-            
+       /*     
         if (this.cursors.left.isDown ) {
             this.Jugador.movimientoJugadorI()
         }
@@ -280,7 +297,7 @@ setTimeout(() =>{
         else {
             this.Jugador.sinMovimiento()
         }
-        // if FinJuego
+        // if FinJuego*/
     }
 
         this.GrupoEnemigos.children.iterate(function(child){
@@ -340,7 +357,7 @@ setTimeout(() =>{
 
     creadorDosBarriles (BarrilX) {
         
-        this.Enemigo= new Enemigos(this,BarrilX,200,"GoblinEnemigo",100)
+        this.Enemigo= new Enemigos(this,BarrilX,200,"GoblinEnemigo",200)
         this.GrupoEnemigos.add(this.Enemigo);
 
         console.log("goblin")
@@ -366,7 +383,7 @@ setTimeout(() =>{
         let PosAbejasY=200
         let contCambioX=0
 
-        this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",20)
+        this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",30)
         this.GrupoEnemigos.add(this.abejaEnemigo)
         PosAbejasY-=60
         PosAbejasX-=30

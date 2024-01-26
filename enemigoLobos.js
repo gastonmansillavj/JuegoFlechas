@@ -222,8 +222,9 @@ export default class enemigoSlime extends ClasePrincipal {
             
 
                 if(enemigo.anims.currentAnim.key!="esquivaLobo") {
-                
+                    
                     enemigo.anims.play("esquivaLobo");
+                    
 
                     if(enemigo.x>600) {
                         enemigo.setVelocityX(-1500)
@@ -251,6 +252,7 @@ export default class enemigoSlime extends ClasePrincipal {
            
                 if(enemigo.anims.currentAnim.key=="esquivaLobo" && enemigo.anims.currentFrame.index>=5) {
                     enemigo.setVelocityX(0)
+                    
                     enemigo.estado="normal"
                 
                 }
