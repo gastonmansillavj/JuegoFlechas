@@ -7,39 +7,22 @@ export default class BarraExp extends Phaser.GameObjects.Sprite{
         this.x=x
         this.y=y
         this.imagen=imagen
-        this.expParaSubir=100
-        this.setOrigin(0)
+        this.expParaSubir=80
+        this.setOrigin(1,0)
         this.setDepth(5)
-        this.DimensionMaxBarra=800
+        this.DimensionMaxBarra=90
         this.DimensionIniBarra=0
         this.DimensionActual=this.DimensionIniBarra
         this.nivel="0"
-        
+        this.setFlipX(true)
+       
         this.setScale(this.DimensionIniBarra/100,1)
         
-        // this.TextoVidaCasa = scene.add.text(this.x+this.width/2-50, this.y, this.vida, {strokeThickness:2,fontFamily:"Open sans",fontSize: '40px', fill: '#000000' })
-        //this.TextoVidaCasa.setDepth(15)
+        this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
-        this.texto = scene.add.text(this.x, this.y, this.nivel, {strokeThickness:2,fontFamily:"Open sans",fontSize: '40px', fill: '#000000' });
+        this.texto = scene.add.text(this.x+50, this.y-8, this.nivel, {strokeThickness:7,fontFamily:"Open sans",fontSize: '50px', fill: '#000000' });
         this.texto.setDepth(5)
-        /*
-
-
-
-        120 => 100
-        60=> ? 60*100/120
-
-        1000=50
-        500=
-
-        1000= experienciaTotal
-        50= tamañoBarra
-        500= experienciaConsegida
-
-        
-
-        
-        */
+  
      
     }
 
@@ -49,7 +32,7 @@ export default class BarraExp extends Phaser.GameObjects.Sprite{
         barraExp.DimensionActual+=((exp*barraExp.DimensionMaxBarra)/barraExp.expParaSubir)/100
         if (barraExp.DimensionActual>=barraExp.DimensionMaxBarra/100) {
             barraExp.DimensionActual=0
-            barraExp.expParaSubir*=2
+            barraExp.expParaSubir*=1.5
             this.nivel=jugador.nivel+=1
             barraExp.texto.setText(this.nivel)
             

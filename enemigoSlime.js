@@ -1,3 +1,4 @@
+import Cristal from "./Cristal.js"
 import EfectosColisionesFlechas from "./EfectosColisionesFlechas.js"
 import ClasePrincipal from "./clasePrincipal.js"
 
@@ -22,6 +23,10 @@ export default class enemigoSlime extends ClasePrincipal {
         this.expEnemigo=10;
         this.estado="normal"
         this.dividido=false
+        this.name="enemigoSlime"
+        // cuchillo
+        this.enColisionCuchillo=false
+        //
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
 
@@ -136,6 +141,8 @@ export default class enemigoSlime extends ClasePrincipal {
         
 
         if (enemigo.estado == "muerto"){
+           
+           
 
             if(enemigo.dividido==false) {
                 
@@ -172,11 +179,14 @@ export default class enemigoSlime extends ClasePrincipal {
     
                 if(enemigo.anims.currentAnim.key!="muereS") {
                     enemigo.anims.play("muereS");
-                    
+                    this.creaCristal()
                     
                 }
                 
                 enemigo.on("animationcomplete",()=>{ 
+                   
+                   
+                    
                     this.destruyePersonaje(enemigo)
                     
                     
@@ -248,6 +258,9 @@ export default class enemigoSlime extends ClasePrincipal {
     destruyePersonaje(enemigo) {
         enemigo.destroy()
         
+    }
+    creaCristal () {
+        new Cristal(this.scene,this.x,this.y,"cristalExp")
     }
 
     

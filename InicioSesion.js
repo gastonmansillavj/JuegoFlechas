@@ -60,7 +60,7 @@ this.cajaTexto.on('input', function (event) {
    
 
     // Puedes hacer algo con el nombre de usuario, por ejemplo, imprimirlo en la consola
-    console.log('Nombre de usuario:', nombreUsuario);
+   console.log('Nombre de usuario:', nombreUsuario);
 });
 
 // mensajes  informativos
@@ -97,7 +97,7 @@ this.btnInicioSesion=new BotonUi(this,550,800,"Boton",1.3,1.3,"Iniciar sesion",(
     
 
     if (this.usuarioABuscar.DatosJugadorIniciarSesion(this.cajaTexto.node.value)) {
-        this.scale.startFullscreen()
+        //this.scale.startFullscreen()
         this.scene.get("Menu").data.set("nombreUsuario",this.cajaTexto.node.value)
         this.scene.start("Menu")
 

@@ -14,15 +14,24 @@ import enemigoSlime from "./enemigoSlime.js";
 import enemigoLobos from "./enemigoLobos.js";
 import enemigoAbeja from "./enemigoAbeja.js";
 import UiMensajes from "./UiMensajes.js";
+import ManejadorEnemigos from "./ManejadorEnemigos.js";
+import Reloj from "./Reloj.js";
+import Cristal from "./Cristal.js";
+import CuchillaRebote from "./CuchillaRebote.js";
+import PersonajeDropMejoras from "./PersonajeDropMejoras.js";
+import UiOro from "./UiOro.js";
+import controladorOroYCompras from "./controladorComprasYOro.js";
 export default class scene1 extends Phaser.Scene {
     
 
     constructor () {
         super ("Nivel1"); // nombre escena-
+        
     }
  
     preload ()  {
         this.load.image("fondo","assets/map1.png");
+        this.load.image("cristalExp","assets/cristalExp.png");
         this.load.spritesheet("GoblinEnemigo","assets/GoblinEnemigo.png",{frameWidth:48,frameHeight:48});
         this.load.spritesheet("jugador","assets/jugador.png",{frameWidth:48.4,frameHeight:50})
         this.load.spritesheet("Cubo","assets/Bloque.png",{frameWidth:48.4,frameHeight:50});
@@ -39,11 +48,20 @@ export default class scene1 extends Phaser.Scene {
         this.load.spritesheet("slimeEnemigo","assets/slimeEnemigo.png",{frameWidth:48,frameHeight:48});
         this.load.spritesheet("loboEnemigo","assets/loboEnemigo.png",{frameWidth:48,frameHeight:48});
         this.load.spritesheet("abejaEnemigo","assets/abejaEnemigo.png",{frameWidth:48,frameHeight:48});
-
+        this.load.image("barraExp","assets/BarraExp.png");
+        this.load.image("pisoDefensa","assets/torreDefensa.png");
+        this.load.image("cuchillo","assets/cuchillo.png");
+        this.load.image("moneda","assets/moneda.png");
+        this.load.spritesheet("enemigoDrop","assets/enemigoDrop.png",{frameWidth:128,frameHeight:128});
     }   
     create () {
-      
 
+// controladorDeOro y compras 
+this.ControladorDinero= new controladorOroYCompras(this)
+      
+// datos usuario 
+
+this.datosUsuario=this.data.get("nombreUsuario")
 
 ///fondo
         var fondo=this.add.image(520,940,"fondo");
@@ -56,7 +74,7 @@ setTimeout(() =>{
 
     this.creaTemporizadores(this.tempEnemigos,30000,this.CreadorDeBarriles,this)
     
- },100000)
+ },500000)
 
 /// crea temporizadores Slime
 setTimeout(() =>{
@@ -72,31 +90,50 @@ setTimeout(() =>{
 
     this.creaTemporizadores(this.tempEnemigosAbejas,20000,this.creadorEnemigosAbejas,this)
 
- },180000)
+ },250000)
 
 
 /// crea temporizadores Lobo 
 setTimeout(() =>{
 
-    this.creaTemporizadores(this.tempEnemigosLobos,13000,this.creadorEnemigosLobos,this)
+    this.creaTemporizadores(this.tempEnemigosLobos,30000,this.creadorEnemigosLobos,this)
     
 
- },50000)
+ },60000)
 
 
  /// creaJefeFinal
 
  setTimeout(() =>{
 
-    this.SlimeEnemigo= new enemigoSlime(this,500,200,"slimeEnemigo",500)
+  /*  this.SlimeEnemigo= new enemigoSlime(this,500,200,"slimeEnemigo",500)
     .setScale(10)
     this.SlimeEnemigo.velocidad=20
     this.SlimeEnemigo.setTint(0xFF0000)
     this.expEnemigo=500;
-    this.GrupoEnemigos.add(this.SlimeEnemigo);
+    this.GrupoEnemigos.add(this.SlimeEnemigo);*/
 
  },320000)
 
+// reloj 
+
+this.reloj=new Reloj (this,510,120)
+
+// objManejaEnemigos
+  this.maneJanEnemigos= new ManejadorEnemigos (this,this.grupoTemp,this.reloj) 
+
+
+
+/// grupoCristales 
+this.grupoCristales=this.add.group()
+
+// grupoMonedas 
+this.grupoMonedas = this.add.group()
+
+// ui oro 
+this.interfazOro= new UiOro (this,1050,200,"moneda") 
+
+// 
     // pausa juego 
 
     this.juegoPausado=true;
@@ -109,10 +146,13 @@ setTimeout(() =>{
     this.grupoLimites=this.add.group()
     this.limitesup=this.physics.add.sprite(500,-20,"Cubo").setScale(25,1);
     this.limiteinf=this.physics.add.sprite(500,1500,"Cubo").setScale(25,1);
+    this.limiteinf.setVisible(false)
 
 
 // jugador principal
     this.Jugador= new Jugador(this,500,1650,"arquero",100)
+
+
 
   
 
@@ -128,7 +168,8 @@ setTimeout(() =>{
     this.cantidadFlechasComunes = 1
 
     // velocidad de disparo 
-    this.velocidadDisparo=400
+    this.velocidadDisparo=this.ControladorDinero.traeVelocidadDeAtaque(this.datosUsuario)
+    
     // temprizador de balas 
     this.tempDisp = this.time.addEvent({
         delay: this.velocidadDisparo, // milisegundos
@@ -162,18 +203,19 @@ setTimeout(() =>{
     // vida De La casa
     this.add.image(300,90,"FondoBarraVida");
     this.add.image(115,90,"torreBarraVida").setScale(0.4);
-    this.vidaCastillo= new VidaCasa(this,180,69,"barraVida",90).setDepth(10)
+    this.vidaCastillo= new VidaCasa(this,180,69,"barraVida",this.ControladorDinero.traeVidaCastillo(this.datosUsuario)).setDepth(10)
 
     // experiencia 
 
-    this.barraExperiencia = new BarraExp(this,600,65,"Cubo")
+    this.fondoBarraExp=this.add.image(800,88,"FondoBarraVida").setFlipX(true);
+    this.barraExperiencia = new BarraExp(this,917,65,"barraExp")
 
 
     // estructuraTorre 
-
-    this.EstructuraTorre= new EstructuraTorre (this,100,1600,"EstructuraTorre",1000)
-    this.EstructuraTorre2= new EstructuraTorre (this,980,1600,"EstructuraTorre",1000)
-
+    this.add.image(560,1810,"pisoDefensa").setScale(2.4,2)
+    //this.EstructuraTorre= new EstructuraTorre (this,100,1600,"EstructuraTorre",1000)
+    //this.EstructuraTorre2= new EstructuraTorre (this,980,1600,"EstructuraTorre",1000)
+    
     // botonPowerUp
     this.tipoDisparo="flechaComun"
     
@@ -189,25 +231,46 @@ setTimeout(() =>{
     //this.menuPowerUps.creaPowerUps(this.menuPowerUps)
     
 
-    // pausa Escena 
+    // cuchillo Rebote 
+
+    // temprizador de rebote 
+   /*
+    this.CuchilloR= new CuchillaRebote (this,this.Jugador.x,this.Jugador.y,"cuchillo",this.GrupoEnemigos,this.Jugador)
+    setTimeout(() => {
+        this.CuchilloR.rebota()
+    }, 15000);
+    */
+
+    // 
+
+    // enemigoDrop 
+    this.GrupoPersoanjesDropeables= this.add.group()
+
+    this.creaTemporizadores(this.enemDrop,15000,this.creaEnemigoDrop,this)
+     
     
-    
+
+    this.physics.add.overlap(this.Grupobalas,this.GrupoPersoanjesDropeables,this.DestruyePersonajePower,null,this);
     this.physics.add.overlap(this.Grupobalas,this.GrupoEnemigos,this.restaVidaEnemigo,null,this);
     this.physics.add.overlap(this.Grupobalas,this.limitesup,this.destruyeBala,null,this);
     this.physics.add.overlap(this.GrupoEnemigos,this.limiteinf,this.destruyeBarril,null,this);
-   
-
+    this.physics.add.overlap(this.grupoCristales,this.barraExperiencia,this.destruyeCristales,null,this);
+    //this.physics.add.overlap(this.GrupoEnemigos,this.CuchilloR,this.cambiaColision,null,this);
+    this.physics.add.overlap(this.interfazOro,this.grupoMonedas,this.destruyeMonedas,null,this);
+    
     // mensaje mover jugador
 
     this.MensajeMueveAlJugador = new UiMensajes(this,500,500,"fondoUi"," Desliza el jugador\n con el dedo o \n con el mouse, el \ndisparo es \nautomatico",1,1,"Boton")
 
+    
+    //this.CuchilloR.rebota()
     /// enemigos pruebas 
-
-    //this.abejaEnemigo= new enemigoAbeja(this,Phaser.Math.Between(280,800),200,"abejaEnemigo",50)
+    //new Cristal(this,500,500,"cristalExp")
+    //this.abejaEnemigo= new enemigoAbeja(this,Phaser.Math.Between(280,800),200,"abejaEnemigo")
     //this.GrupoEnemigos.add(this.abejaEnemigo)
 
 
-    //this.LoboEnemigo= new enemigoLobos(this,Phaser.Math.Between(280,800),200,"loboEnemigo",50)
+    //this.LoboEnemigo= new enemigoLobos(this,Phaser.Math.Between(280,800),200,"loboEnemigo")
     //this.GrupoEnemigos.add(this.LoboEnemigo);
 
     //this.SlimeEnemigo= new enemigoSlime(this,500,200,"slimeEnemigo",50)
@@ -219,13 +282,26 @@ setTimeout(() =>{
     
     }
     update () {
+        this.maneJanEnemigos.update()   
 
+       
+
+       //grupoCristales
+
+       const escena=this
+       this.grupoCristales.children.iterate(function (child) {
+        
+       
+        escena.physics.moveToObject(child,escena.barraExperiencia,900)
+
+        });
+   
         if (this.vidaCastillo.vida<=0) {
             this.juegoPausado=true
             this.MenuSiguienteNivel.muestraReiniciar(this.MenuSiguienteNivel,true)
 
         }
-
+       
        
        
        
@@ -239,7 +315,17 @@ setTimeout(() =>{
              this.grupoTemp.forEach(function(elemento) {
                 elemento.paused=true
             });
+
+            this.GrupoPersoanjesDropeables.children.iterate(function (child) {
+                if (child) {
+                    child.estado="detenido"
+                    child.estadoEnemigoDrop()
+                }
+                
+
+                });
              
+                
              
             this.tempDisp.paused=true         
 
@@ -247,7 +333,19 @@ setTimeout(() =>{
         else {
             
             this.grupoTemp.forEach(function(elemento) {
-                console.log(elemento.paused=false);
+                elemento.paused=false
+            });
+
+            this.GrupoPersoanjesDropeables.children.iterate(function (child) {
+               if (child) {
+                if(child.estado=="detenido") {
+                    child.estado="parado"
+                }
+               
+                child.estadoEnemigoDrop()
+               }
+               
+            
             });
 
             this.tempDisp.paused=false
@@ -285,19 +383,8 @@ setTimeout(() =>{
             gameObject.x = dragX;
             //gameObject.y = dragY;
         });
-       /*     
-        if (this.cursors.left.isDown ) {
-            this.Jugador.movimientoJugadorI()
-        }
-        else if (this.cursors.right.isDown ) {
-            this.Jugador.movimientoJugadorD()
-           
-           
-        }
-        else {
-            this.Jugador.sinMovimiento()
-        }
-        // if FinJuego*/
+       
+        // if FinJuego
     }
 
         this.GrupoEnemigos.children.iterate(function(child){
@@ -372,7 +459,7 @@ setTimeout(() =>{
     }
 
     creadorEnemigosLobos () {
-        this.LoboEnemigo= new enemigoLobos(this,Phaser.Math.Between(280,800),200,"loboEnemigo",50)
+        this.LoboEnemigo= new enemigoLobos(this,Phaser.Math.Between(280,800),200,"loboEnemigo")
         this.GrupoEnemigos.add(this.LoboEnemigo);
         
 
@@ -383,13 +470,13 @@ setTimeout(() =>{
         let PosAbejasY=200
         let contCambioX=0
 
-        this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",30)
+        this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo")
         this.GrupoEnemigos.add(this.abejaEnemigo)
         PosAbejasY-=60
         PosAbejasX-=30
         for (let i = 0; i <2; i++) { 
                        
-            this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",20)
+            this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo")
             this.GrupoEnemigos.add(this.abejaEnemigo)
             PosAbejasX+=60
 
@@ -399,7 +486,7 @@ setTimeout(() =>{
         PosAbejasX-=180
         for (let i = 0; i <4; i++) { 
                        
-            this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo",20)
+            this.abejaEnemigo= new enemigoAbeja(this,PosAbejasX,PosAbejasY,"abejaEnemigo")
             this.GrupoEnemigos.add(this.abejaEnemigo)
             PosAbejasX+=60
            
@@ -431,7 +518,7 @@ setTimeout(() =>{
         bala.destroy();
         let exp=enemigo.EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,bala)
         
-        this.barraExperiencia.ActualizaExperiencia(exp,this.barraExperiencia,this.Jugador,this.menuPowerUps)
+        
         
         
         
@@ -499,14 +586,51 @@ setTimeout(() =>{
     delay: tiempo, // milisegundos
     callback:metodo,
     callbackScope: this,
-    loop: true })
+    loop: true,
+    name:nombreEnemigos })
 
     this.grupoTemp.push(nombreEnemigos)
-    console.log(this.grupoTemp.length)
-    
-    
-    
-    
+    //console.log(this.grupoTemp.length)
 
     }
-}
+
+    destruyeCristales(Cristal,barraExp) {
+        
+        this.barraExperiencia.ActualizaExperiencia(Cristal.experiencia,this.barraExperiencia,this.Jugador,this.menuPowerUps)
+        Cristal.destroy()
+    }
+
+    cambiaColision (enemigo,cuchillo) {
+        
+        if(enemigo.enColisionCuchillo==false) {
+            cuchillo.setVelocity(0)
+            enemigo.enColisionCuchillo=true
+            cuchillo.rebota()
+            setTimeout(() => {
+                if (enemigo) {
+                    enemigo.enColisionCuchillo=false
+                }
+                
+            }, 300);
+        }
+
+         
+       
+    }
+
+    DestruyePersonajePower (bala,slime) {
+        bala.destroy()
+        slime.estado="muerto"
+    }
+
+    creaEnemigoDrop() {
+        new PersonajeDropMejoras(this,Phaser.Math.Between(300,700),Phaser.Math.Between(200,1000),"enemigoDrop")
+    }
+          
+    destruyeMonedas(oro,moneda) {
+        moneda.destroy()
+        oro.actualizaTexto()
+    }
+    
+    
+}/// fin Clase 

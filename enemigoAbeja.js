@@ -1,20 +1,21 @@
 import EfectosColisionesFlechas from "./EfectosColisionesFlechas.js"
 import ClasePrincipal from "./clasePrincipal.js"
+import Cristal from "./Cristal.js"
 
 export default class enemigoAbeja extends ClasePrincipal {
     
-    constructor (scene,x,y,texture,vida) {
-        super (scene,x,y,texture,vida)
+    constructor (scene,x,y,texture) {
+        super (scene,x,y,texture)
         this.scene=scene
         this.x=x
         this.y=y
         this.texture=texture
-        this.vida=vida
+        this.vida=20
         this.lobo=this
         this.velocidad=100
         this.setVelocityY(this.velocidad)
         this.setScale(2.8)
-        this.TextoVida = scene.add.text(this.x, this.y, vida, {strokeThickness:2,fontFamily:"Open sans",fontSize: '40px', fill: '#000000' });
+        this.TextoVida = scene.add.text(this.x, this.y, this.vida, {strokeThickness:2,fontFamily:"Open sans",fontSize: '40px', fill: '#000000' });
         this.TextoVida.setDepth(1)
         this.TextoVida.setOrigin(0.5)
         this.setBodySize(18,25)
@@ -143,6 +144,8 @@ export default class enemigoAbeja extends ClasePrincipal {
     
                 if(enemigo.anims.currentAnim.key!="muereAbeja") {
                     enemigo.anims.play("muereAbeja");
+                    this.creaCristal(this.x-20,this.y)
+                    this.creaCristal(this.x+20,this.y)
                     
                     
                 }
@@ -228,6 +231,10 @@ export default class enemigoAbeja extends ClasePrincipal {
     destruyePersonaje(enemigo) {
         enemigo.destroy()
         
+    }
+
+    creaCristal (x,y) {
+        new Cristal(this.scene,x,y,"cristalExp")
     }
 
     

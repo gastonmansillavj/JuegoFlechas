@@ -1,4 +1,5 @@
 import BotonUi from "./BotonUi.js";
+import UiOro from "./UiOro.js";
 import controladorOroYCompras from "./controladorComprasYOro.js";
 export default class Menu extends Phaser.Scene {
     
@@ -12,6 +13,7 @@ export default class Menu extends Phaser.Scene {
         this.load.image("Boton","assets/boton.png")
         this.load.image("fondoUi","assets/fondoUi.png")
         this.load.html('cajaTexto', 'assets/cajaDeTexto.html');
+        this.load.image("moneda","assets/moneda.png");
        
     }   
     create () {
@@ -30,7 +32,7 @@ export default class Menu extends Phaser.Scene {
     
     })
 
-       let btnHabilidades = new BotonUi(this,500,800,"Boton",1,1,"Flechas",()=>{
+       let btnHabilidades = new BotonUi(this,500,800,"Boton",1,1,"Tienda",()=>{
         
         this.scene.get("MenuCompras").data.set("nombreUsuario",nombreUsuario)
         this.scene.start("MenuCompras")
@@ -40,17 +42,9 @@ export default class Menu extends Phaser.Scene {
        
        
        let objOro= new controladorOroYCompras (this)
-       let textoMonedas = this.add.text(800,100, objOro.traeCantidadOro(nombreUsuario), {
-            fontFamily: 'Arial',
-            fontSize: '50px',
-            color: '#ffffff',
-            bold:true,
-            stroke:  '#000000',
-            strokeThickness: 9
-           
-        });
-        textoMonedas.setDepth(6)
-        textoMonedas.setOrigin(0.5, 0.5)
+       
+        this.cantOro= new UiOro(this,300,150,"moneda")
+        this.cantOro.texto.setText(objOro.traeCantidadOro(nombreUsuario))
 /*
         let botonPruebaMonedas=  new BotonUi(this,500,1300,"Boton",1,1,"monedasPruebas",()=>{
             objOro.sumaMonedas(nombreUsuario,2)

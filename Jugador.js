@@ -14,7 +14,10 @@ export default class Jugador extends ClasePrincipal{
         this.setOffset(10,8)
         this.vel_de_disparos=400;
         this.cantidadDePersonajes=1;
-        this.PoderDeAtaque=5;
+        this.Usuario=this.scene.datosUsuario
+        this.PoderDeAtaque=this.scene.ControladorDinero.traePoderDeAtaque(this.Usuario);
+        //console.log(this.scene.ControladorDinero.traePoderDeAtaque(this.Usuario))
+        
         this.setScale(6)
         this.velDeMovimiento=300;
         this.setDepth(1)
