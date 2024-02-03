@@ -16,11 +16,10 @@ import enemigoAbeja from "./enemigoAbeja.js";
 import UiMensajes from "./UiMensajes.js";
 import ManejadorEnemigos from "./ManejadorEnemigos.js";
 import Reloj from "./Reloj.js";
-import Cristal from "./Cristal.js";
-import CuchillaRebote from "./CuchillaRebote.js";
 import PersonajeDropMejoras from "./PersonajeDropMejoras.js";
 import UiOro from "./UiOro.js";
 import controladorOroYCompras from "./controladorComprasYOro.js";
+import Rayo from "./Rayo.js";
 export default class scene1 extends Phaser.Scene {
     
 
@@ -50,9 +49,10 @@ export default class scene1 extends Phaser.Scene {
         this.load.spritesheet("abejaEnemigo","assets/abejaEnemigo.png",{frameWidth:48,frameHeight:48});
         this.load.image("barraExp","assets/BarraExp.png");
         this.load.image("pisoDefensa","assets/torreDefensa.png");
-        this.load.image("cuchillo","assets/cuchillo.png");
         this.load.image("moneda","assets/moneda.png");
         this.load.spritesheet("enemigoDrop","assets/enemigoDrop.png",{frameWidth:128,frameHeight:128});
+        this.load.spritesheet("rayo","assets/Rayo.png",{frameWidth:68,frameHeight:193});
+    
     }   
     create () {
 
@@ -62,6 +62,12 @@ this.ControladorDinero= new controladorOroYCompras(this)
 // datos usuario 
 
 this.datosUsuario=this.data.get("nombreUsuario")
+
+// rayo 
+
+this.rayoActivado=false
+this.grupoRayos=this.add.group()
+this.cantRayos=1
 
 ///fondo
         var fondo=this.add.image(520,940,"fondo");
@@ -76,6 +82,8 @@ setTimeout(() =>{
     
  },500000)
 
+
+ // temporizadores 
 /// crea temporizadores Slime
 setTimeout(() =>{
 
@@ -83,15 +91,12 @@ setTimeout(() =>{
 
  },1000)
 
-
-
 /// crea temporizadores Abeja 
 setTimeout(() =>{
 
     this.creaTemporizadores(this.tempEnemigosAbejas,20000,this.creadorEnemigosAbejas,this)
 
  },250000)
-
 
 /// crea temporizadores Lobo 
 setTimeout(() =>{
@@ -122,8 +127,6 @@ this.reloj=new Reloj (this,510,120)
 // objManejaEnemigos
   this.maneJanEnemigos= new ManejadorEnemigos (this,this.grupoTemp,this.reloj) 
 
-
-
 /// grupoCristales 
 this.grupoCristales=this.add.group()
 
@@ -151,10 +154,6 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
 
 // jugador principal
     this.Jugador= new Jugador(this,500,1650,"arquero",100)
-
-
-
-  
 
     ///flechas congelantes 
     
@@ -185,15 +184,11 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
     this.Jugador.setInteractive()
     this.input.setDraggable(this.Jugador);
 
-
-
-
     // grupo enemigos 
     this.GrupoEnemigos=this.add.group()
 
     // grupo Balas
     this.Grupobalas=this.add.group()
-
 
     
     // aleatoriedad barriles 
@@ -220,7 +215,7 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
     this.tipoDisparo="flechaComun"
     
 
-    // menu termia nivel
+    // menu terminaa nivel
     this.MenuSiguienteNivel = new UiFinNivel (this,550,900,"fondoUi","Nivel Terminado",1.8,2,"Boton")
     this.MenuSiguienteNivel.ocultatodos(this.MenuSiguienteNivel,false)  
     
@@ -231,17 +226,12 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
     //this.menuPowerUps.creaPowerUps(this.menuPowerUps)
     
 
-    // cuchillo Rebote 
+    
 
     // temprizador de rebote 
-   /*
-    this.CuchilloR= new CuchillaRebote (this,this.Jugador.x,this.Jugador.y,"cuchillo",this.GrupoEnemigos,this.Jugador)
-    setTimeout(() => {
-        this.CuchilloR.rebota()
-    }, 15000);
-    */
+   
+  
 
-    // 
 
     // enemigoDrop 
     this.GrupoPersoanjesDropeables= this.add.group()
@@ -255,15 +245,14 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
     this.physics.add.overlap(this.Grupobalas,this.limitesup,this.destruyeBala,null,this);
     this.physics.add.overlap(this.GrupoEnemigos,this.limiteinf,this.destruyeBarril,null,this);
     this.physics.add.overlap(this.grupoCristales,this.barraExperiencia,this.destruyeCristales,null,this);
-    //this.physics.add.overlap(this.GrupoEnemigos,this.CuchilloR,this.cambiaColision,null,this);
+    this.physics.add.overlap(this.GrupoEnemigos,this.grupoRayos,this.causaDanioEne,null,this);
     this.physics.add.overlap(this.interfazOro,this.grupoMonedas,this.destruyeMonedas,null,this);
     
     // mensaje mover jugador
 
     this.MensajeMueveAlJugador = new UiMensajes(this,500,500,"fondoUi"," Desliza el jugador\n con el dedo o \n con el mouse, el \ndisparo es \nautomatico",1,1,"Boton")
 
-    
-    //this.CuchilloR.rebota()
+   
     /// enemigos pruebas 
     //new Cristal(this,500,500,"cristalExp")
     //this.abejaEnemigo= new enemigoAbeja(this,Phaser.Math.Between(280,800),200,"abejaEnemigo")
@@ -284,17 +273,18 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
     update () {
         this.maneJanEnemigos.update()   
 
-       
-
        //grupoCristales
-
        const escena=this
        this.grupoCristales.children.iterate(function (child) {
-        
-       
+         
         escena.physics.moveToObject(child,escena.barraExperiencia,900)
 
         });
+        /// enemigos cerca 
+      
+
+       
+
    
         if (this.vidaCastillo.vida<=0) {
             this.juegoPausado=true
@@ -310,7 +300,6 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
             this.GrupoEnemigos.children.iterate(function (child) {
                 child.setVelocity(0)
              });
-
 
              this.grupoTemp.forEach(function(elemento) {
                 elemento.paused=true
@@ -362,15 +351,10 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
             this.tempEnemigos.remove()
             if (this.GrupoEnemigos.countActive()<=0) {
                 this.MenuSiguienteNivel.muestraSiguiente(this.MenuSiguienteNivel,true)
-                //this.scene.pause()
+               
 
 
             }
-            
-            //this.scene.pause()
-           // setTimeout (()=>{this.scene.resume()
-           // this.nivelTerminado=false
-           // },5000)
 
            
             
@@ -384,8 +368,8 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
             //gameObject.y = dragY;
         });
        
-        // if FinJuego
-    }
+        
+        }// if FinJuego
 
         this.GrupoEnemigos.children.iterate(function(child){
            child.actualizaPosicion()
@@ -516,11 +500,7 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
     restaVidaEnemigo(bala,enemigo){
 
         bala.destroy();
-        let exp=enemigo.EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,bala)
-        
-        
-        
-        
+        let exp=enemigo.EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,bala)     
         
     }
     
@@ -552,7 +532,9 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
         }
         else {
             let posFlechas=this.Jugador.x-(25*(this.cantidadFlechasComunes-1))
-
+            if (this.cantidadFlechasComunes>=5){
+                this.cantidadFlechasComunes=5
+            }
             for (let i = 0; i <this.cantidadFlechasComunes; i++) {
 
                 this.creaYGuardaFlechas("comun",posFlechas+i*50)
@@ -600,23 +582,7 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
         Cristal.destroy()
     }
 
-    cambiaColision (enemigo,cuchillo) {
-        
-        if(enemigo.enColisionCuchillo==false) {
-            cuchillo.setVelocity(0)
-            enemigo.enColisionCuchillo=true
-            cuchillo.rebota()
-            setTimeout(() => {
-                if (enemigo) {
-                    enemigo.enColisionCuchillo=false
-                }
-                
-            }, 300);
-        }
-
-         
-       
-    }
+    
 
     DestruyePersonajePower (bala,slime) {
         bala.destroy()
@@ -631,6 +597,47 @@ this.interfazOro= new UiOro (this,1050,200,"moneda")
         moneda.destroy()
         oro.actualizaTexto()
     }
+
+    creaRayos() { 
+
+        try {
+            for (let i = 0; i <this.cantRayos; i++) { 
+                let pos={x:0,y:0}
+                let enemigoAleatorio=Phaser.Math.Between(0,this.GrupoEnemigos.countActive()-1) 
+                let enemigo = this.GrupoEnemigos.children.entries[enemigoAleatorio]
+                
+                if(enemigo) {
+                pos={x:enemigo.x,y:enemigo.y}       
+                this.grupoRayos.add(new Rayo (this,pos.x,pos.y,"rayo"))
+                }
+                
+                         
+            }
+        }
+        catch (error) {
+            console.log( "error en  crea rayos")
+        }
+       
+        
+    }
+
+    causaDanioEne (enemigo,rayo) {
+        if (enemigo.enColisionRayo==false) {
+            enemigo.enColisionRayo=true
+            enemigo.EnemigoRecibeAtaque(this.Jugador.PoderDeAtaque,enemigo,rayo)
+            setTimeout(() => {
+                if(enemigo) {
+                    enemigo.enColisionRayo=false
+                }
+            }, 200);
+        }
+        else {
+          
+        }
+        
+          
+    }
+    
     
     
 }/// fin Clase 

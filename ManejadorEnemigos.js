@@ -14,22 +14,22 @@ export default class ManejadorEnemigos {
         const esteObjeto=this
         
        /// control slimes 
-        if(this.reloj.minutos==0 && this.reloj.segundos==10) {
+        if(this.reloj.minutos==0 && this.reloj.segundos==30) {
             if(this.temporizadores[0] && this.temporizadores[0].delay != 3000) {
                
                 console.log(this.temporizadores[0].delay = 3000)
             }
         }
-       else if(this.reloj.minutos==3 && this.reloj.segundos==0) {
+       else if(this.reloj.minutos==1 && this.reloj.segundos==30) {
             if(this.temporizadores[0] && this.temporizadores[0].delay != 2000) {
                 
                 console.log(this.temporizadores[0].delay = 2000)
             }
         }
 
-       else if(this.reloj.minutos==6 && this.reloj.segundos==0) {
+       else if(this.reloj.minutos==2 && this.reloj.segundos==30) {
             if(this.temporizadores[0] && this.temporizadores[0].delay != 1000) {
-                this.temporizadores[0].delay = 2000
+                this.temporizadores[0].delay = 1000
                 console.log(this.temporizadores[0].delay = 1000)
             }
         }

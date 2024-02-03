@@ -25,7 +25,7 @@ export default class enemigoSlime extends ClasePrincipal {
         this.dividido=false
         this.name="enemigoSlime"
         // cuchillo
-        this.enColisionCuchillo=false
+        this.enColisionRayo=false
         //
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
@@ -152,7 +152,7 @@ export default class enemigoSlime extends ClasePrincipal {
                 if(enemigo.anims.currentAnim.key!="divideS") {
                     enemigo.anims.play("divideS");
                     
-                    
+                    this.creaCristal()
                     
                 }
                

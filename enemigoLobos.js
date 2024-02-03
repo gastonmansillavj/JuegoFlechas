@@ -26,6 +26,7 @@ export default class enemigoSlime extends ClasePrincipal {
         this.estado="normal"
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
+        this.enColisionRayo=false
 
         this.configurarAnimaciones()  
         this.anims.play("caminarLobo");

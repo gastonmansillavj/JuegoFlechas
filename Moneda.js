@@ -15,7 +15,6 @@ export default class Moneda extends Phaser.Physics.Arcade.Sprite{
        // this.setOrigin(0,0)
          this.setScale(0.2)  
          this.setDepth(9)
-         console.log("momome") 
          this.scene.grupoMonedas.add(this)
               
          this.scene.physics.moveToObject(this,this.scene.interfazOro,900)

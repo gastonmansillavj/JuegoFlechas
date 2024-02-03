@@ -32,16 +32,23 @@ export default class UiPowerUps extends Phaser.Physics.Arcade.Sprite{
 
         
 
-/*
-        this.PowerAlea1= new BotonUi (this.scene,this.x,this.y-300,this.imgbotonOk,1,1,"Aumenta el daño",()=>{
-            this.jugador.PoderDeAtaque+=2
+
+        this.PowerAlea1= new BotonUi (this.scene,this.x,this.y-300,this.imgbotonOk,1,1,"Crea rayos \n que golpean a un enemigo\n aleatorio ",()=>{
+           if(this.scene.rayoActivado==false) {
+            this.scene.rayoActivado=true
+            this.scene.creaTemporizadores( this.tempRayos,2000,this.scene.creaRayos,this.scene)
+          
+        }
+         else {
+           this.scene.cantRayos+=1
+         }
             this.scene.juegoPausado=false
             this.ocultatodos(this,false)
         })
         this.PowerAlea1.setDepth(11)
         this.PowerAlea1.setScale(2.5)
         this.PowerAlea1.texto.setDepth(12)
-*/
+
         this.PowerAlea2= new BotonUi (this.scene,this.x,this.y+100,this.imgbotonOk,1,1,"Lanza una flecha \n Congelante  despues de "+this.scene.TiempoSpawnFlechaCongelante+"\n disparos comunes",()=>{
             
             if (this.scene.EstadoFlechaCongelante==false) {
@@ -85,7 +92,7 @@ export default class UiPowerUps extends Phaser.Physics.Arcade.Sprite{
    
     ocultatodos(MenuPowerUp,estado) {
        this.ocultaMuestra(MenuPowerUp,estado)
-      // this.ocultaMuestra(MenuPowerUp.PowerAlea1,estado)
+       this.ocultaMuestra(MenuPowerUp.PowerAlea1,estado)
        this.ocultaMuestra(MenuPowerUp.PowerAlea2,estado)
        //this.ocultaMuestra(MenuPowerUp.PowerAlea3,estado)
        this.ocultaMuestra(MenuPowerUp.PowerAlea4,estado)
@@ -102,11 +109,24 @@ export default class UiPowerUps extends Phaser.Physics.Arcade.Sprite{
     creaPowerUps(uiPower) {
    
         uiPower.ocultaMuestra(this,true)
-       
-         uiPower.ocultaMuestra(uiPower.PowerAlea2,true)
-       
+        uiPower.ocultaMuestra(uiPower.PowerAlea1,true)  
+        uiPower.ocultaMuestra(uiPower.PowerAlea2,true)
 
-        uiPower.ocultaMuestra(uiPower.PowerAlea4,true)
+        if(this.scene.EstadoFlechaCongelante==true &&  this.scene.TiempoSpawnFlechaCongelante<=3) {
+            this.PowerAlea2.texto.setText("lanza una flecha congelante cada "+ this.scene.TiempoSpawnFlechaCongelante-1+"Disparos")
+            uiPower.ocultaMuestra(uiPower.PowerAlea2,true)
+        }
+        else {
+            uiPower.ocultaMuestra(uiPower.PowerAlea2,false)
+        }
+        
+
+        if ( this.scene.cantidadFlechasComunes>=5) {
+            uiPower.ocultaMuestra(uiPower.PowerAlea4,false)
+        }
+        else {
+            uiPower.ocultaMuestra(uiPower.PowerAlea4,true)  
+        } 
        
 
        

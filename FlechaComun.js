@@ -10,7 +10,7 @@ export default class FlechaComun extends ClasePrincipal{
         this.texture=texture
         this.vida=vida
         this.Velocidad=150;
-        this.PoderDeAtaque=10;
+        //this.PoderDeAtaque=10;
         this.setScale(2)
         this.setVelocityY(-1200)
         this.scene.physics.add.existing(this)

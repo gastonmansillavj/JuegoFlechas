@@ -30,7 +30,7 @@ var config = {
         default:"arcade", // tipo de fisica que va a utilizar 
         arcade: {
             gravity: { y :0},// la gravedad del juego
-            debug:false, // debug
+            debug:true, // debug
             fps: 60
         }
     },

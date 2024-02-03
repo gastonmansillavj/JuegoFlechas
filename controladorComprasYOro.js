@@ -42,9 +42,10 @@ export default class controladorOroYCompras {
             cantidadDeOro:0,
             nivFlechaComun:1,
             nivFlechaCongelante:1,
-            poderAtaque:5,
+            poderAtaque:2,
             VelocidadAtaque:400,
-            vidaCastillo:120
+            vidaCastillo:120,
+            rebotesCuchillas:2
 
         }
         this.guardarEnLocalStorage(datos.nombre,datos)
@@ -54,6 +55,11 @@ export default class controladorOroYCompras {
     traeCantidadOro(usuario) {
        
         return this.recuperarDeLocalStorage(usuario).cantidadDeOro
+    }
+
+    traeCantidadRebotes(usuario) {
+       
+        return this.recuperarDeLocalStorage(usuario).rebotesCuchillas
     }
 
     traePoderDeAtaque(usuario) {
@@ -77,6 +83,29 @@ export default class controladorOroYCompras {
         let sumaMonedas=cantidad+ObjetoUsuario.cantidadDeOro
        
         ObjetoUsuario.cantidadDeOro=sumaMonedas
+        //console.log(ObjetoUsuario)
+        this.guardarEnLocalStorage(usuario,ObjetoUsuario)
+
+
+    }
+
+    sumaRebotes(usuario) {
+
+        let ObjetoUsuario= this.recuperarDeLocalStorage(usuario)
+       // console.log("cantidad"+cantidad)
+        let sumaRebotes=1+ObjetoUsuario.rebotesCuchillas
+       
+        ObjetoUsuario.rebotesCuchillas=sumaRebotes
+        //console.log(ObjetoUsuario)
+        this.guardarEnLocalStorage(usuario,ObjetoUsuario)
+
+
+    }
+
+    ReiniciaRebotes(usuario) {
+
+        let ObjetoUsuario= this.recuperarDeLocalStorage(usuario)     
+        ObjetoUsuario.rebotesCuchillas=2
         //console.log(ObjetoUsuario)
         this.guardarEnLocalStorage(usuario,ObjetoUsuario)
 

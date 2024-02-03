@@ -21,6 +21,7 @@ export default class Enemigos extends ClasePrincipal {
         this.estaVivo=true
         this.expEnemigo=200;
         this.estado="normal"
+        this.enColisionRayo=false
         
        
         this.buffDeAtaque="nada"
